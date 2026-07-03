@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AkimiTech | Software Engineering Solutions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    /* ─── TOKENS ─────────────────────────────── */
+    :root[data-theme="dark"] {
+      --bg:          #070B14;
+      --bg-card:     #0F1623;
+      --bg-elevated: #192033;
+      --primary:     #5B8EFF;
+      --primary-dim: rgba(91,142,255,0.12);
+      --accent:      #00E5B0;
+      --accent-dim:  rgba(0,229,176,0.12);
+      --text:        #E4EAF8;
+      --text-muted:  #6B7FA3;
+      --border:      rgba(91,142,255,0.14);
+      --glow:        rgba(91,142,255,0.28);
+      --nav-bg:      rgba(7,11,20,0.80);
+      --shadow:      0 8px 40px rgba(0,0,0,0.5);
+    }
+    :root[data-theme="light"] {
+      --bg:          #F2F5FF;
+      --bg-card:     #FFFFFF;
+      --bg-elevated: #E6ECFF;
+      --primary:     #3B6EFF;
+      --primary-dim: rgba(59,110,255,0.10);
+      --accent:      #00A87E;
+      --accent-dim:  rgba(0,168,126,0.10);
+      --text:        #0D1526;
+      --text-muted:  #5A6B8A;
+      --border:      rgba(59,110,255,0.16);
+      --glow:        rgba(59,110,255,0.18);
+      --nav-bg:      rgba(242,245,255,0.85);
+      --shadow:      0 8px 40px rgba(59,110,255,0.1);
+    }
+
+    /* ─── RESET ──────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transition: background 0.35s, color 0.35s;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* ─── NAV ────────────────────────────────── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:200;
+      height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 1.45rem; letter-spacing: -0.5px;
+      color: var(--primary);
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.88rem; font-weight: 500;
+      transition: color 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .theme-btn {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 7px 16px;
+      color: var(--text-muted);
+      font-size: 0.82rem; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .hamburger {
+      display: none;
+      flex-direction: column; gap:5px;
+      background: none; border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display:block; width:22px; height:2px;
+      background: var(--text-muted); border-radius:2px;
+      transition: all 0.3s;
+    }
+
+    /* ─── HERO ───────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 6% 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset:0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .hero-orb {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, var(--glow) 0%, transparent 65%);
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: left 0.4s ease, top 0.4s ease;
+    }
+    .hero-inner {
+      position: relative; z-index:1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+      max-width: 1100px; width: 100%;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,176,0.25);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--accent); border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100%{ opacity:1; transform:scale(1); }
+      50%{ opacity:0.5; transform:scale(0.75); }
+    }
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+      font-weight: 700; line-height: 1.07; letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    h1 .grad {
+      background: linear-gradient(130deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      color: var(--text-muted); font-size: 1rem; line-height: 1.75;
+      max-width: 440px; margin-bottom: 36px;
+    }
+    .hero-btns { display:flex; gap:14px; flex-wrap: wrap; }
+
+    /* ─── BUTTONS ────────────────────────────── */
+    .btn-prim {
+      background: linear-gradient(135deg, var(--primary), #8B6EFF);
+      color: #fff; border: none;
+      padding: 13px 28px; border-radius: 8px;
+      font-weight: 600; font-size: 0.9rem;
+      box-shadow: 0 4px 20px var(--glow);
+      transition: all 0.3s;
+    }
+    .btn-prim:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--glow); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+      padding: 13px 28px; border-radius: 8px;
+      font-weight: 500; font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ─── TERMINAL ───────────────────────────── */
+    .terminal-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .t-bar {
+      background: var(--bg-elevated);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .t-dot { width:11px; height:11px; border-radius:50%; }
+    .t-red{background:#FF5F57;} .t-yel{background:#FEBC2E;} .t-grn{background:#28C840;}
+    .t-title {
+      margin-left: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text-muted);
+    }
+    .t-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; line-height: 1.85;
+      min-height: 260px;
+    }
+    .tk-cmt{color:#4A6080;} .tk-kw{color:#C084FC;} .tk-str{color:#86EFAC;}
+    .tk-var{color:#93C5FD;} .tk-acc{color:var(--accent);} .tk-fn{color:#FCD34D;}
+    .t-cursor {
+      display: inline-block; width: 2px; height: 0.95em;
+      background: var(--accent); vertical-align: text-bottom;
+      margin-left: 1px; animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+    /* ─── SECTION SHARED ─────────────────────── */
+    section { padding: 96px 6%; }
+    .section-max { max-width: 1100px; margin: 0 auto; }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .eyebrow::after {
+      content:''; flex:0 0 48px; height:1px; background: var(--border);
+    }
+    .sec-h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem,3.5vw,2.7rem);
+      font-weight:700; letter-spacing:-0.8px; margin-bottom:14px;
+    }
+    .sec-sub { color:var(--text-muted); font-size:0.97rem; line-height:1.75; max-width:520px; }
+
+    /* ─── ABOUT ──────────────────────────────── */
+    #about { background: var(--bg-card); }
+    .about-grid {
+      display: grid; grid-template-columns: 320px 1fr;
+      gap: 72px; align-items: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .profile-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px 28px; text-align: center;
+      position: relative;
+    }
+    .profile-card::before {
+      content:''; position:absolute; top:-1px; left:25%; right:25%; height:2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    .avatar {
+      width: 108px; 
+      height: 108px; 
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      margin: 0 auto 18px;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      border: 3px solid var(--border);
+      flex-shrink: 0;
+      overflow: hidden; /* Ensures the image stays round */
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Prevents stretching */
+    }
+    .p-role { color:var(--primary); font-size:0.82rem; font-weight:500; margin-bottom:24px; }
+    .p-info { list-style:none; text-align:left; display:flex; flex-direction:column; gap:12px; }
+    .p-info li {
+      display:flex; align-items:center; gap:12px;
+      font-size:0.82rem; color:var(--text-muted);
+    }
+    .p-icon {
+      width:32px; height:32px; border-radius:8px;
+      background:var(--bg-elevated); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.85rem; flex-shrink:0;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap:14px; margin: 28px 0 32px;
+    }
+    .skill-chip {
+      background:var(--bg-elevated); border:1px solid var(--border);
+      border-radius:10px; padding:14px 16px;
+    }
+    .skill-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; }
+    .skill-nm { font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; }
+    .skill-lvl { font-size:0.72rem; color:var(--accent); }
+    .skill-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .skill-fill {
+      height:100%; width:0;
+      background:linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius:2px; transition: width 1.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─── SERVICES ───────────────────────────── */
+    #services { background: var(--bg); }
+    .srv-intro {
+      display:grid; grid-template-columns:1fr 1fr; gap:60px;
+      align-items:center; margin-bottom:56px;
+    }
+    .srv-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
+    }
+    .srv-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:28px 24px;
+      position:relative; overflow:hidden;
+      transition: all 0.3s;
+    }
+    .srv-card::after {
+      content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, var(--primary), var(--accent));
+      transform:scaleX(0); transform-origin:left;
+      transition:transform 0.35s;
+    }
+    .srv-card:hover {
+      transform:translateY(-5px);
+      border-color:rgba(91,142,255,0.4);
+      box-shadow: 0 16px 48px var(--glow);
+    }
+    .srv-card:hover::after { transform:scaleX(1); }
+    .srv-icon {
+      width:50px; height:50px;
+      background:var(--bg-elevated); border:1px solid var(--border);
+      border-radius:13px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; margin-bottom:18px;
+    }
+    .srv-card h3 {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1.05rem; font-weight:600; margin-bottom:8px;
+    }
+    .srv-card p { color:var(--text-muted); font-size:0.845rem; line-height:1.65; margin-bottom:22px; }
+    .btn-order {
+      width:100%; background:var(--primary-dim);
+      border:1px solid rgba(91,142,255,0.3);
+      color:var(--primary); border-radius:8px;
+      padding:10px; font-weight:600; font-size:0.85rem;
+      transition:all 0.25s;
+    }
+    .btn-order:hover {
+      background:linear-gradient(135deg,var(--primary),#8B6EFF);
+      color:#fff; border-color:transparent;
+      box-shadow:0 4px 18px var(--glow);
+    }
+
+    /* ─── CONTACT ────────────────────────────── */
+    #contact { background:var(--bg-card); }
+    .contact-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:64px;
+      align-items:start; max-width:1000px; margin:0 auto;
+    }
+    .c-items { display:flex; flex-direction:column; gap:14px; margin-top:28px; }
+    .c-item {
+      display:flex; align-items:center; gap:16px;
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:12px; padding:18px;
+      transition:border-color 0.2s;
+    }
+    .c-item:hover { border-color:var(--primary); }
+    .c-icon {
+      width:42px; height:42px; border-radius:10px;
+      background:var(--bg-elevated); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; flex-shrink:0;
+    }
+    .c-label { font-size:0.72rem; color:var(--text-muted); margin-bottom:2px; }
+    .c-val { font-weight:600; font-size:0.88rem; }
+
+    /* Order/Contact Form */
+    .form-box {
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:18px; padding:32px;
+      position:relative;
+    }
+    .form-box::before {
+      content:''; position:absolute; top:-1px; left:20%; right:20%; height:2px;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    }
+    .form-box-title {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1.2rem; font-weight:700; margin-bottom:22px;
+    }
+    .fg { margin-bottom:14px; }
+    .fg label { display:block; font-size:0.77rem; color:var(--text-muted); font-weight:500; margin-bottom:6px; }
+    .fg input, .fg textarea, .fg select {
+      width:100%; background:var(--bg-elevated);
+      border:1px solid var(--border); border-radius:8px;
+      padding:11px 14px; color:var(--text);
+      font-family:'Inter',sans-serif; font-size:0.875rem;
+      outline:none; transition:border-color 0.2s;
+    }
+    .fg input:focus, .fg textarea:focus, .fg select:focus { border-color:var(--primary); }
+    .fg textarea { height:100px; resize:vertical; }
+    .fg select option { background:var(--bg-card); }
+    .success-note {
+      display:none; margin-top:14px;
+      background:var(--accent-dim); border:1px solid rgba(0,229,176,0.35);
+      border-radius:8px; padding:13px 16px;
+      color:var(--accent); font-size:0.875rem; text-align:center;
+    }
+    .success-note.show { display:block; }
+
+    /* ─── EXPERIENCE / EDUCATION TIMELINE ────── */
+    .exp-cols {
+      display:grid; grid-template-columns:1fr 1fr; gap:48px;
+    }
+    @media (max-width:860px){ .exp-cols{ grid-template-columns:1fr; } }
+    .exp-col-title {
+      font-size:1.05rem; font-weight:700; margin-bottom:22px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .tl { position:relative; padding-left:28px; }
+    .tl::before {
+      content:''; position:absolute; left:6px; top:6px; bottom:6px;
+      width:2px; background:var(--border);
+    }
+    .tl-item { position:relative; padding-bottom:28px; }
+    .tl-item:last-child { padding-bottom:0; }
+    .tl-item::before {
+      content:''; position:absolute; left:-28px; top:4px;
+      width:12px; height:12px; border-radius:50%;
+      background:var(--primary); border:2px solid var(--bg);
+      box-shadow:0 0 0 2px var(--primary);
+    }
+    .tl-date {
+      font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+      color:var(--primary); font-weight:600; margin-bottom:4px;
+    }
+    .tl-role { font-weight:600; font-size:0.95rem; margin-bottom:2px; }
+    .tl-org { font-size:0.84rem; color:var(--text-muted); }
+
+    /* ─── FOOTER ─────────────────────────────── */
+    footer {
+      text-align:center; padding:36px 6%;
+      border-top:1px solid var(--border);
+      color:var(--text-muted); font-size:0.82rem;
+    }
+    footer strong { color:var(--primary); }
+
+    /* ─── MODAL ──────────────────────────────── */
+    .modal-bg {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(0,0,0,0.72);
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(6px);
+      opacity:0; pointer-events:none;
+      transition:opacity 0.3s;
+    }
+    .modal-bg.open { opacity:1; pointer-events:all; }
+    .modal {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:20px; padding:36px;
+      width:92%; max-width:460px;
+      position:relative;
+      transform:scale(0.93) translateY(10px);
+      transition:transform 0.3s;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-bg.open .modal { transform:scale(1) translateY(0); }
+    .modal-close {
+      position:absolute; top:14px; right:14px;
+      background:var(--bg-elevated); border:1px solid var(--border);
+      width:30px; height:30px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; color:var(--text-muted);
+      transition:all 0.2s;
+    }
+    .modal-close:hover { border-color:var(--primary); color:var(--primary); }
+    .modal-title { font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:700; margin-bottom:4px; }
+    .modal-sub { font-size:0.82rem; color:var(--text-muted); margin-bottom:24px; }
+    .modal-sub span { color:var(--primary); font-weight:600; }
+
+    /* ─── ANIMATIONS ─────────────────────────── */
+    .reveal {
+      opacity:0; transform:translateY(24px);
+      transition:opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.in { opacity:1; transform:translateY(0); }
+
+    /* ─── RESPONSIVE ─────────────────────────── */
+    @media(max-width:900px){
+      .hero-inner { grid-template-columns:1fr; }
+      .terminal-wrap { display:none; }
+      .about-grid { grid-template-columns:1fr; }
+      .srv-grid { grid-template-columns:repeat(2,1fr); }
+      .srv-intro { grid-template-columns:1fr; gap:24px; }
+      .contact-grid { grid-template-columns:1fr; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+    }
+    @media(max-width:560px){
+      .srv-grid { grid-template-columns:1fr; }
+      .skills-grid { grid-template-columns:1fr; }
+      section { padding:72px 5%; }
+      h1 { font-size:2.2rem; }
+    }
+
+    /* Mobile nav drawer */
+    .mobile-nav {
+      position:fixed; top:68px; left:0; right:0; z-index:199;
+      background:var(--bg-card); border-bottom:1px solid var(--border);
+      padding:20px 6%;
+      display:none; flex-direction:column; gap:18px;
+    }
+    .mobile-nav.open { display:flex; }
+    .mobile-nav a {
+      color:var(--text-muted); font-size:0.95rem; font-weight:500;
+      padding:6px 0; border-bottom:1px solid var(--border);
+    }
+    .mobile-nav a:hover { color:var(--primary); }
+
+    /* Language badges */
+    .lang-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+    .lang-badge {
+      background:var(--primary-dim); border:1px solid rgba(91,142,255,0.25);
+      color:var(--primary);
+      font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:600;
+      padding:5px 14px; border-radius:50px;
+    }
+
+    /* ─── NEWS FEED ──────────────────────────── */
+    #news { background: var(--bg-card); }
+    .news-hdr {
+      display:flex; justify-content:space-between; align-items:flex-end;
+      margin-bottom:36px; flex-wrap:wrap; gap:16px;
+    }
+    .news-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+    .ntab {
+      background:var(--bg-elevated); border:1px solid var(--border);
+      border-radius:50px; padding:6px 16px;
+      font-size:0.8rem; font-weight:500; color:var(--text-muted);
+      cursor:pointer; transition:all 0.2s;
+    }
+    .ntab.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .ntab:hover:not(.active) { border-color:var(--primary); color:var(--primary); }
+    .news-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+    }
+    .ncard {
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:14px; padding:22px;
+      display:flex; flex-direction:column;
+      text-decoration:none; color:inherit;
+      transition:all 0.3s;
+    }
+    .ncard:hover {
+      transform:translateY(-4px);
+      border-color:rgba(91,142,255,0.4);
+      box-shadow:0 12px 36px var(--glow);
+    }
+    .ncard-source {
+      font-size:0.7rem; color:var(--accent); font-weight:600;
+      margin-bottom:10px; display:flex; align-items:center; gap:6px;
+      text-transform:uppercase; letter-spacing:0.5px;
+    }
+    .ncard-title {
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.92rem; font-weight:600; line-height:1.45;
+      margin-bottom:10px; flex:1;
+    }
+    .ncard-desc {
+      color:var(--text-muted); font-size:0.8rem; line-height:1.6;
+      margin-bottom:14px;
+      display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .ncard-foot {
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:0.74rem; color:var(--text-muted); margin-top:auto; padding-top:10px;
+      border-top:1px solid var(--border);
+    }
+    .ncard-link { color:var(--primary); font-weight:600; }
+    /* Skeleton */
+    @keyframes shimmer { 0%,100%{opacity:0.4;} 50%{opacity:0.8;} }
+    .skel-anim { background:var(--bg-elevated); border-radius:6px; animation:shimmer 1.6s ease-in-out infinite; }
+    .skel-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:22px; }
+    /* Refresh button */
+    .ref-btn {
+      display:flex; align-items:center; gap:7px;
+      background:var(--bg-elevated); border:1px solid var(--border);
+      border-radius:8px; padding:8px 16px;
+      font-size:0.82rem; font-weight:500; color:var(--text-muted);
+      cursor:pointer; transition:all 0.2s; font-family:inherit;
+    }
+    .ref-btn:hover { border-color:var(--primary); color:var(--primary); }
+    .ref-btn svg { flex-shrink:0; }
+    .ref-btn.spin svg { animation:spin 0.9s linear infinite; }
+    @keyframes spin { to{ transform:rotate(360deg); } }
+    .news-status { font-size:0.74rem; color:var(--text-muted); margin-top:16px; text-align:center; }
+    @media(max-width:900px){ .news-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:560px){ .news-grid{ grid-template-columns:1fr; } }
+  .contact-link{color:inherit;text-decoration:none;transition:color .2s ease;}
+  .contact-link:hover{color:#25D366;text-decoration:underline;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-logo">Akimi<span>Tech</span></div>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div style="display:flex;gap:12px;align-items:center;">
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
+    </button>
+    <button class="hamburger" id="ham" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#hero" onclick="closeMobileNav()">Home</a>
+  <a href="#about" onclick="closeMobileNav()">About</a>
+  <a href="#experience" onclick="closeMobileNav()">Experience</a>
+  <a href="#services" onclick="closeMobileNav()">Services</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+</div>
+
+<!-- ─── HERO ─────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb" id="orb"></div>
+  <div class="hero-inner">
+    <!-- Left: text -->
+    <div>
+      <div class="hero-badge reveal">
+        <div class="badge-dot"></div>
+        Available for Projects &nbsp;·&nbsp; Juba, South Sudan
+      </div>
+      <h1 class="reveal" style="transition-delay:0.1s">
+        Engineering Digital<br>
+        <span class="grad">Solutions That Last</span>
+      </h1>
+      <p class="hero-sub reveal" style="transition-delay:0.2s">
+        Custom software, web applications, and automation tools — crafted with precision from the heart of South Sudan.
+      </p>
+      <div class="hero-btns reveal" style="transition-delay:0.3s">
+        <button class="btn-prim" onclick="openModal('General Project')">🚀 Start a Project</button>
+        <button class="btn-ghost" onclick="smooth('about')">Learn More ↓</button>
+      </div>
+    </div>
+
+    <!-- Right: terminal -->
+    <div class="terminal-wrap reveal" style="transition-delay:0.25s">
+      <div class="t-bar">
+        <div class="t-dot t-red"></div>
+        <div class="t-dot t-yel"></div>
+        <div class="t-dot t-grn"></div>
+        <span class="t-title">akim@akimitech ~ developer.py</span>
+      </div>
+      <div class="t-body" id="termEl"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ABOUT ─────────────────────────────────── -->
+<section id="about">
+  <div class="about-grid">
+    <!-- Profile card -->
+    <div class="profile-card reveal">
+      <div class="avatar">
+        <img src="akim_potriat.png" alt="Akim D. Malith">
+      </div>
+      <div class="p-name">Akim D. Malith</div>
+      <div class="p-role">CEO &amp; Founder · AkimiTech</div>
+      <ul class="p-info">
+        <li><span class="p-icon">🎓</span>Software Engineer (UoJ) · 2nd Year</li>
+        <li><span class="p-icon">📧</span>akim1dau2@gmail.com</li>
+        <li><span class="p-icon">📞</span>+211 922 708 878</li>
+        <li><span class="p-icon">📍</span>Juba, Republic of South Sudan</li>
+      </ul>
+      <div style="margin-top:24px;">
+        <div class="eyebrow" style="justify-content:center;margin-bottom:10px;">Languages</div>
+        <div class="lang-row" style="justify-content:center;">
+          <span class="lang-badge">Python</span>
+          <span class="lang-badge">C</span>
+          <span class="lang-badge">C++</span>
+          <span class="lang-badge">JavaScript</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio & skills -->
+    <div>
+      <div class="eyebrow reveal">About Me</div>
+      <h2 class="sec-h2 reveal">Passionate engineer building tomorrow's solutions today</h2>
+      <p class="sec-sub reveal" style="margin-bottom:28px;">
+        I'm Akim D. Malith — a second-year Software Engineering student at the University of Juba and founder of AkimiTech. I build efficient, reliable software tailored to client needs, from small automation scripts to full web applications. My mission: bring world-class software craftsmanship to South Sudan and beyond.
+      </p>
+
+      <div class="eyebrow reveal">Proficiency</div>
+      <div class="skills-grid reveal">
+        <div class="skill-chip">
+          <div class="skill-head">
+            <span class="skill-nm">Python</span>
+            <span class="skill-lvl">Advanced</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" data-w="100"></div></div>
+        </div>
+        <div class="skill-chip">
+          <div class="skill-head">
+            <span class="skill-nm">JavaScript</span>
+            <span class="skill-lvl">Advanced</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" data-w="100"></div></div>
+        </div>
+        <div class="skill-chip">
+          <div class="skill-head">
+            <span class="skill-nm">C++</span>
+            <span class="skill-lvl">Advanced</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" data-w="100"></div></div>
+        </div>
+        <div class="skill-chip">
+          <div class="skill-head">
+            <span class="skill-nm">C</span>
+            <span class="skill-lvl">Advanced</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" data-w="100"></div></div>
+        </div>
+      </div>
+
+      <button class="btn-prim reveal" onclick="openModal('Consultation')">Work With Me →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXPERIENCE & EDUCATION ───────────────── -->
+<section id="experience">
+  <div class="section-max">
+    <div class="eyebrow reveal">Background</div>
+    <h2 class="sec-h2 reveal">Experience &amp; Education</h2>
+    <p class="sec-sub reveal" style="margin-bottom:40px;">A quick look at where I've worked, led, and studied.</p>
+
+    <div class="exp-cols">
+      <!-- Experience -->
+      <div class="reveal">
+        <div class="exp-col-title">💼 Experience</div>
+        <div class="tl">
+          <div class="tl-item">
+            <div class="tl-date">2023 — Present</div>
+            <div class="tl-role">CEO &amp; Founder</div>
+            <div class="tl-org">AkimiTech</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025 — 2026</div>
+            <div class="tl-role">Information Secretary</div>
+            <div class="tl-org">Ngok Lual Yak Students' Association, Universities &amp; Higher Learning Institutes, Juba</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025 — 2026</div>
+            <div class="tl-role">Deputy External Affairs Secretary</div>
+            <div class="tl-org">Ngok Lual Yak Students' Association, Universities &amp; Higher Learning Institutes, Juba</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="reveal">
+        <div class="exp-col-title">🎓 Education</div>
+        <div class="tl">
+          <div class="tl-item">
+            <div class="tl-date">2024 — Present</div>
+            <div class="tl-role">B.Sc. in Computer Science</div>
+            <div class="tl-org">University of Juba (UoJ)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ──────────────────────────────── -->
+<section id="services">
+  <div class="section-max">
+    <div class="srv-intro">
+      <div>
+        <div class="eyebrow reveal">Services</div>
+        <h2 class="sec-h2 reveal">What I Build for You</h2>
+      </div>
+      <p class="sec-sub reveal">
+        From elegant web interfaces to high-performance system software, every project is delivered with precision, clean code, and real attention to your requirements.
+      </p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv-card reveal">
+        <div class="srv-icon">🌐</div>
+        <h3>Web Development</h3>
+        <p>Modern, responsive websites and web applications built with clean code and a focus on performance and usability.</p>
+        <button class="btn-order" onclick="openModal('Web Development')">Order Now</button>
+      </div>
+      <div class="srv-card reveal" style="transition-delay:0.1s">
+        <div class="srv-icon">🖥️</div>
+        <h3>Desktop Applications</h3>
+        <p>Cross-platform desktop software using Python and C++ for powerful, high-performance local workflows.</p>
+        <button class="btn-order" onclick="openModal('Desktop Application')">Order Now</button>
+      </div>
+      <div class="srv-card reveal" style="transition-delay:0.2s">
+        <div class="srv-icon">🤖</div>
+        <h3>Automation Scripts</h3>
+        <p>Python-powered automation tools that eliminate repetitive tasks and save your team hours every week.</p>
+        <button class="btn-order" onclick="openModal('Automation Script')">Order Now</button>
+      </div>
+      <div class="srv-card reveal" style="transition-delay:0.05s">
+        <div class="srv-icon">⚙️</div>
+        <h3>System Programming</h3>
+        <p>Low-level system software and utilities in C and C++ engineered for reliability and maximum performance.</p>
+        <button class="btn-order" onclick="openModal('System Programming')">Order Now</button>
+      </div>
+      <div class="srv-card reveal" style="transition-delay:0.15s">
+        <div class="srv-icon">📊</div>
+        <h3>Data Solutions</h3>
+        <p>Data pipelines, analysis scripts, and dashboards that turn raw data into actionable business insights.</p>
+        <button class="btn-order" onclick="openModal('Data Solutions')">Order Now</button>
+      </div>
+      <div class="srv-card reveal" style="transition-delay:0.25s">
+        <div class="srv-icon">💡</div>
+        <h3>Tech Consultation</h3>
+        <p>Strategic technology advice to help you make the right software decisions for your business or project.</p>
+        <button class="btn-order" onclick="openModal('Tech Consultation')">Book a Session</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ────────────────────────────────── -->
+<section id="contact">
+  <div class="contact-grid">
+    <!-- Left: info -->
+    <div>
+      <div class="eyebrow reveal">Contact</div>
+      <h2 class="sec-h2 reveal">Let's Build Something Great</h2>
+      <p class="sec-sub reveal">Have a project in mind? Reach out directly or fill in the form — I respond within 24 hours.</p>
+
+      <div class="c-items reveal">
+        <div class="c-item">
+          <div class="c-icon">📧</div>
+          <div>
+            <div class="c-label">Email</div>
+            <div class="c-val"><a href="mailto:akim1dau2@gmail.com" class="contact-link">akim1dau2@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon">📞</div>
+          <div>
+            <div class="c-label">Phone / WhatsApp</div>
+            <div class="c-val"><a href="https://wa.me/211922708878" target="_blank" rel="noopener" class="contact-link">+211 922 708 878</a></div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon">📍</div>
+          <div>
+            <div class="c-label">Location</div>
+            <div class="c-val">Juba, Republic of South Sudan</div>
+          </div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="color:#1877F2;"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg></div>
+          <div>
+            <div class="c-label">Facebook</div>
+            <div class="c-val"><a href="https://www.facebook.com/AkimDmaith" target="_blank" rel="noopener" class="contact-link">facebook.com/AkimDmaith</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: form -->
+    <div class="form-box reveal">
+      <div class="form-box-title">Send a Message</div>
+      <div class="fg">
+        <label>Your Name</label>
+        <input type="text" id="cName" placeholder="Full name">
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="cEmail" placeholder="you@example.com">
+      </div>
+      <div class="fg">
+        <label>Service Interested In</label>
+        <select id="cService">
+          <option>Web Development</option>
+          <option>Desktop Application</option>
+          <option>Automation Script</option>
+          <option>System Programming</option>
+          <option>Data Solutions</option>
+          <option>Tech Consultation</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Your Message</label>
+        <textarea id="cMsg" placeholder="Tell me about your project..."></textarea>
+      </div>
+      <button class="btn-prim" style="width:100%" onclick="sendMsg()">Send Message →</button>
+      <div class="success-note" id="cSuccess">✅ Message received! I'll get back to you within 24 hours.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────── -->
+<footer>
+  <p>© 2024 <strong>AkimiTech</strong> · Built by Akim D. Malith · Juba, Republic of South Sudan</p>
+  <p style="margin-top:10px;"><a href="https://www.facebook.com/AkimDmaith" target="_blank" rel="noopener" class="contact-link" style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>Facebook</a></p>
+  <p style="margin-top:6px;font-size:0.74rem;opacity:0.6;">Python · C · C++ · JavaScript</p>
+</footer>
+
+<!-- ─── ORDER MODAL ────────────────────────────── -->
+<div class="modal-bg" id="modalBg" onclick="bgClose(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title">Place an Order</div>
+    <p class="modal-sub">Service: <span id="mService">Web Development</span></p>
+    <div class="fg">
+      <label>Your Name</label>
+      <input type="text" id="oName" placeholder="Full name">
+    </div>
+    <div class="fg">
+      <label>Phone / WhatsApp</label>
+      <input type="tel" id="oPhone" placeholder="+211...">
+    </div>
+    <div class="fg">
+      <label>Project Description</label>
+      <textarea id="oDesc" placeholder="Describe what you need built..." style="height:110px;"></textarea>
+    </div>
+    <div class="fg">
+      <label>Budget Range</label>
+      <select id="oBudget">
+        <option>Under $100</option>
+        <option>$100 – $500</option>
+        <option>$500 – $1,000</option>
+        <option>$1,000+</option>
+        <option>Let's Discuss</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Timeline</label>
+      <select id="oTime">
+        <option>As soon as possible</option>
+        <option>Within 1 week</option>
+        <option>1–2 weeks</option>
+        <option>1 month</option>
+        <option>Flexible</option>
+      </select>
+    </div>
+    <button class="btn-prim" style="width:100%;margin-top:4px;" onclick="submitOrder()">Submit Order →</button>
+    <div class="success-note" id="oSuccess">🎉 Order received! Akim will contact you within 24 hours.</div>
+  </div>
+</div>
+
+<script>
+/* ═══ THEME ═══════════════════════════════════════════ */
+let dark = true;
+function toggleTheme(){
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeIcon').textContent = dark ? '🌙' : '☀️';
+  document.getElementById('themeLabel').textContent = dark ? 'Dark' : 'Light';
+}
+
+/* ═══ MOBILE NAV ══════════════════════════════════════ */
+let mOpen = false;
+function toggleMobileNav(){
+  mOpen = !mOpen;
+  document.getElementById('mobileNav').classList.toggle('open', mOpen);
+}
+function closeMobileNav(){
+  mOpen = false;
+  document.getElementById('mobileNav').classList.remove('open');
+}
+
+/* ═══ SMOOTH SCROLL ═══════════════════════════════════ */
+function smooth(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+/* ═══ TERMINAL ANIMATION ══════════════════════════════ */
+const LINES = [
+  {h:'<span class="tk-cmt"># AkimiTech · Software Engineering</span>'},
+  {h:''},
+  {h:'<span class="tk-kw">class</span> <span class="tk-fn">Developer</span>:'},
+  {h:'    <span class="tk-kw">def</span> <span class="tk-fn">__init__</span>(self):'},
+  {h:'        self.name     = <span class="tk-str">"Akim D. Malith"</span>'},
+  {h:'        self.title    = <span class="tk-str">"Software Engineer"</span>'},
+  {h:'        self.uni      = <span class="tk-str">"University of Juba"</span>'},
+  {h:'        self.year     = <span class="tk-acc">2</span>'},
+  {h:'        self.location = <span class="tk-str">"Juba, South Sudan"</span>'},
+  {h:'        self.stack    = <span class="tk-acc">[</span><span class="tk-str">"Python"</span>,<span class="tk-str">"C"</span>,<span class="tk-str">"C++"</span>,<span class="tk-str">"JS"</span><span class="tk-acc">]</span>'},
+  {h:''},
+  {h:'    <span class="tk-kw">def</span> <span class="tk-fn">build</span>(self, your_idea):'},
+  {h:'        <span class="tk-kw">return</span> <span class="tk-acc">✓</span> <span class="tk-str">"Quality. On time."</span>'},
+];
+
+let li=0, rendered=[], termEl=document.getElementById('termEl');
+function tick(){
+  if(li>=LINES.length){ termEl.innerHTML=rendered.join('<br>')+'<span class="t-cursor"></span>'; return; }
+  rendered.push(LINES[li].h);
+  termEl.innerHTML=rendered.join('<br>')+'<span class="t-cursor"></span>';
+  li++;
+  setTimeout(tick, LINES[li-1].h===''? 60 : 110);
+}
+setTimeout(tick, 900);
+
+/* ═══ REVEAL ON SCROLL ════════════════════════════════ */
+const revEls = document.querySelectorAll('.reveal');
+const ro = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      // animate skill bars inside
+      e.target.querySelectorAll('.skill-fill[data-w]').forEach(f=>{
+        setTimeout(()=>{ f.style.width = f.getAttribute('data-w')+'%'; },200);
+      });
+    }
+  });
+},{threshold:0.12});
+revEls.forEach(el=>ro.observe(el));
+
+/* Auto-trigger hero reveals */
+setTimeout(()=>{
+  document.querySelectorAll('#hero .reveal').forEach(el=>el.classList.add('in'));
+},100);
+
+/* ═══ ORB FOLLOW MOUSE ════════════════════════════════ */
+const hero = document.getElementById('hero');
+const orb  = document.getElementById('orb');
+hero.addEventListener('mousemove',(e)=>{
+  const r = hero.getBoundingClientRect();
+  orb.style.left = (e.clientX - r.left) + 'px';
+  orb.style.top  = (e.clientY - r.top)  + 'px';
+  orb.style.transform = 'translate(-50%,-50%)';
+});
+
+/* ═══ MODAL ═══════════════════════════════════════════ */
+function openModal(svc){
+  document.getElementById('mService').textContent = svc;
+  document.getElementById('oName').value='';
+  document.getElementById('oPhone').value='';
+  document.getElementById('oDesc').value='';
+  document.getElementById('oSuccess').classList.remove('show');
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+function bgClose(e){ if(e.target===document.getElementById('modalBg')) closeModal(); }
+
+/* ═══ EMAILJS CONFIG ══════════════════════════════════
+   1. Create a free account at https://www.emailjs.com
+   2. Add an Email Service (e.g. Gmail) -> copy its Service ID
+   3. Create TWO email templates (one for contact, one for orders) -> copy their Template IDs
+   4. Copy your Public Key from Account > General
+   5. Paste all four values below
+════════════════════════════════════════════════════════ */
+const EMAILJS_PUBLIC_KEY      = '4Cl88cXWfQeC0NeSE';
+const EMAILJS_SERVICE_ID      = 'service_37xk509';
+const EMAILJS_CONTACT_TEMPLATE = 'template_hd2lvkc';
+const EMAILJS_ORDER_TEMPLATE   = 'template_ar8s5tn';
+
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+async function submitOrder(){
+  const n=document.getElementById('oName').value.trim();
+  const d=document.getElementById('oDesc').value.trim();
+  const phone=document.getElementById('oPhone').value.trim();
+  const budget=document.getElementById('oBudget').value;
+  const timeline=document.getElementById('oTime').value;
+  const service=document.getElementById('mService').textContent;
+  if(!n||!d){ alert('Please fill in your name and project description.'); return; }
+
+  const btn=document.querySelector('#modalBg .btn-prim');
+  const originalText=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='Sending...';
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_TEMPLATE, {
+      name: n, phone: phone || 'Not provided', description: d,
+      budget, timeline, service
+    });
+    document.getElementById('oSuccess').textContent = '🎉 Order received! Akim will contact you within 24 hours.';
+    document.getElementById('oSuccess').classList.add('show');
+    document.getElementById('oName').value='';
+    document.getElementById('oPhone').value='';
+    document.getElementById('oDesc').value='';
+    setTimeout(()=>{ closeModal(); },3200);
+  } catch (error) {
+    document.getElementById('oSuccess').textContent='⚠️ Could not send right now. Please email akim1dau2@gmail.com directly.';
+    document.getElementById('oSuccess').classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML=originalText;
+  }
+}
+
+/* ═══ CONTACT FORM ════════════════════════════════════ */
+async function sendMsg(){
+  const n=document.getElementById('cName').value.trim();
+  const e=document.getElementById('cEmail').value.trim();
+  const s=document.getElementById('cService').value;
+  const m=document.getElementById('cMsg').value.trim();
+  if(!n||!e||!m){ alert('Please fill in all fields.'); return; }
+
+  const btn=document.querySelector('#contact .btn-prim');
+  const originalText=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='Sending...';
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONTACT_TEMPLATE, {
+      name: n, email: e, service: s, message: m
+    });
+    document.getElementById('cSuccess').textContent = '✅ Message received! I\'ll get back to you within 24 hours.';
+    document.getElementById('cSuccess').classList.add('show');
+    document.getElementById('cName').value='';
+    document.getElementById('cEmail').value='';
+    document.getElementById('cMsg').value='';
+  } catch (error) {
+    document.getElementById('cSuccess').textContent='⚠️ Could not send right now. Please email akim1dau2@gmail.com directly.';
+    document.getElementById('cSuccess').classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML=originalText;
+  }
+}
+
+/* ═══ NAV SCROLL SHADOW ═══════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').style.boxShadow =
+    window.scrollY > 30 ? '0 4px 24px rgba(0,0,0,0.2)' : 'none';
+});
+</script>
+</body>
+</html>
